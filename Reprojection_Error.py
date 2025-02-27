@@ -9,22 +9,16 @@ def ReprojectionError(X, pts, Rt, K, homogenity):
 
     r, _ = cv2.Rodrigues(R)
     
-    # if homogenity == 1:
+    # if homogenity == 0:
     #     X = cv2.convertPointsFromHomogeneous(X)
 
     p, _ = cv2.projectPoints(X, r, t, K, distCoeffs=None)
     p = p[:, 0, :]
     p = np.float32(p)
     pts = np.float32(pts)
-    
-    if homogenity == 1:
-        total_error = cv2.norm(p, pts, cv2.NORM_L2)
-    else:
-        total_error = cv2.norm(p, pts, cv2.NORM_L2)
-        
+
+    total_error = cv2.norm(p, pts, cv2.NORM_L2) 
     tot_error = total_error / len(p)
-    #print(p[0], pts[0])
-    print("Returning:", tot_error, p)
 
     return tot_error, X, p
 
@@ -43,13 +37,12 @@ def OptimReprojectionError(x, n2d):
 
 	p2d, _ = cv2.projectPoints(X, r, t, K, distCoeffs = None)
 	p2d = p2d[:, 0, :]
-	#print(p2d[0], p[0])
 	for idx in range(num_pts):
 		img_pt = p[idx]
 		reprojected_pt = p2d[idx]
-		er = (img_pt - reprojected_pt)**2
+		er = img_pt - reprojected_pt
 		error.append(er)
 
-	err_arr = np.array(error).ravel()/num_pts
+	err_arr = np.array(error).ravel()
 
 	return err_arr

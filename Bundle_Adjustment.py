@@ -4,12 +4,9 @@ from scipy.optimize import least_squares
 
 def BundleAdjustment(points_3d, temp2, Rt2, K, r_error):
 	
-	print("test: ", points_3d.shape, temp2.shape, Rt2.shape)
 	opt_variables_init = np.hstack((Rt2.ravel(), K.ravel()))
-	opt_variables_2d = np.hstack((opt_variables_init, temp2.ravel()))
-	print(opt_variables_2d.shape[0], opt_variables_init.shape[0])				
+	opt_variables_2d = np.hstack((opt_variables_init, temp2.ravel()))			
 	n2d = int(opt_variables_2d.shape[0] - opt_variables_init.shape[0])
-	print(n2d)
 	opt_variables = np.hstack((opt_variables_2d, points_3d.ravel()))
 	corrected_values = least_squares(fun = OptimReprojectionError, x0 = opt_variables, args=(n2d,),  gtol = r_error).x
 	Rt = corrected_values[0:12].reshape((3,4))
